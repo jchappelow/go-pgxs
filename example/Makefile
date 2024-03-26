@@ -11,7 +11,7 @@ include $(PGXS)
 
 INCLUDEDIR_SERVER := $(shell $(PG_CONFIG) --includedir-server)
 
-$(addsuffix $(DLSUFFIX), $(EXTENSION)):
+$(addsuffix $(DLSUFFIX), $(EXTENSION)): *.c *.go Makefile
 	echo Building $@
 	CGO_CFLAGS="-I$(INCLUDEDIR_SERVER) -fpic -Wno-int-conversion -Wno-incompatible-pointer-types" \
 		go build -v -buildmode=c-shared -o $@
