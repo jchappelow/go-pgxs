@@ -489,16 +489,8 @@ func makeArray[S ~[]E, E any](elemtype C.Oid, s S) Datum {
 func makeSlice(val C.Datum) []C.Datum {
 	var clength C.int
 	datumArray := C.datum_to_array(val, &clength)
-	length := int(clength)
-	// TODO: test this:
-	slice := unsafe.Slice(datumArray, length)
-	// slice := (*[1 << 30]C.Datum)(unsafe.Pointer(datumArray))[:length]
-	return slice
+	return unsafe.Slice(datumArray, int(clength)) // old way: (*[1 << 30]C.Datum)(unsafe.Pointer(datumArray))[:length]
 }
-
-// func (d Datum) ToCDatum() C.Datum {
-// 	return C.Datum(d)
-// }
 
 // ToDatum returns the Postgresql C type from Go type.
 func ToDatum(val interface{}) Datum {
@@ -567,7 +559,7 @@ func ToDatum(val interface{}) Datum {
 		}
 		isNull := make([]C.bool, len(v.attrs))
 		for i, attr := range v.attrs {
-			if attr == (C.Datum)(ToDatum(nil)) {
+			if attr == 0 { // (C.Datum)(ToDatum(nil))
 				isNull[i] = (C._Bool)(true)
 			} else {
 				isNull[i] = (C._Bool)(false)
@@ -692,47 +684,47 @@ type TriggerData struct {
 
 // FiredBefore returns true if the trigger fired before the operation.
 func (td *TriggerData) FiredBefore() bool {
-	return C.trigger_fired_before(td.tgEvent) == (C._Bool)(true)
+	return bool(C.trigger_fired_before(td.tgEvent)) // == (C._Bool)(true)
 }
 
 // FiredAfter returns true if the trigger fired after the operation.
 func (td *TriggerData) FiredAfter() bool {
-	return C.trigger_fired_after(td.tgEvent) == (C._Bool)(true)
+	return bool(C.trigger_fired_after(td.tgEvent)) //  == (C._Bool)(true)
 }
 
 // FiredInstead returns true if the trigger fired instead of the operation.
 func (td *TriggerData) FiredInstead() bool {
-	return C.trigger_fired_instead(td.tgEvent) == (C._Bool)(true)
+	return bool(C.trigger_fired_instead(td.tgEvent)) // == (C._Bool)(true)
 }
 
 // FiredForRow returns true if the trigger fired for a row-level event.
 func (td *TriggerData) FiredForRow() bool {
-	return C.trigger_fired_for_row(td.tgEvent) == (C._Bool)(true)
+	return bool(C.trigger_fired_for_row(td.tgEvent)) // == (C._Bool)(true)
 }
 
 // FiredForStatement returns true if the trigger fired for a statement-level event.
 func (td *TriggerData) FiredForStatement() bool {
-	return C.trigger_fired_for_statement(td.tgEvent) == (C._Bool)(true)
+	return bool(C.trigger_fired_for_statement(td.tgEvent)) // == (C._Bool)(true)
 }
 
 // FiredByInsert returns true if the trigger was fired by an INSERT command.
 func (td *TriggerData) FiredByInsert() bool {
-	return C.trigger_fired_by_insert(td.tgEvent) == (C._Bool)(true)
+	return bool(C.trigger_fired_by_insert(td.tgEvent)) // == (C._Bool)(true)
 }
 
 // FiredByUpdate returns true if the trigger was fired by an UPDATE command.
 func (td *TriggerData) FiredByUpdate() bool {
-	return C.trigger_fired_by_update(td.tgEvent) == (C._Bool)(true)
+	return bool(C.trigger_fired_by_update(td.tgEvent)) // == (C._Bool)(true)
 }
 
 // FiredByDelete returns true if the trigger was fired by a DELETE command.
 func (td *TriggerData) FiredByDelete() bool {
-	return C.trigger_fired_by_delete(td.tgEvent) == (C._Bool)(true)
+	return bool(C.trigger_fired_by_delete(td.tgEvent)) // == (C._Bool)(true)
 }
 
 // FiredByTruncate returns true if the trigger was fired by a TRUNCATE command.
 func (td *TriggerData) FiredByTruncate() bool {
-	return C.trigger_fired_by_truncate(td.tgEvent) == (C._Bool)(true)
+	return bool(C.trigger_fired_by_truncate(td.tgEvent)) // == (C._Bool)(true)
 }
 
 // TriggerRow is used in TriggerData as NewRow and OldRow
