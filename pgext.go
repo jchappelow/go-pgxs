@@ -16,7 +16,6 @@ package pgxs
 //	 CGO_CFLAGS='-I"/usr/include/postgresql/16/server" -fpic' CGO_LDFLAGS='-shared' go build -v -buildmode=c-shared
 
 /*
-#cgo CFLAGS: -I"/usr/include/postgresql/16/server" -fpic
 #cgo LDFLAGS: -shared
 #cgo darwin LDFLAGS: -undefined dynamic_lookup
 
