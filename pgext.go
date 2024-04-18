@@ -21,6 +21,7 @@ package pgxs
 
 typedef unsigned int uint;
 
+#include "stdlib.h"
 #include "postgres.h"
 #include "fmgr.h"
 #include "pgtime.h"
@@ -821,7 +822,7 @@ func (stmt *Stmt) Query(args ...interface{}) (*Rows, error) {
 		return nil, err
 	}
 	rv := C.SPI_execute_plan(stmt.spiPlan, valuesP, nullsP, (C._Bool)(false), 0)
-	if rv == C.SPI_OK_SELECT && C.SPI_processed > 0 {
+	if rv == C.SPI_OK_SELECT && C.SPI_processed > 0 { // not a pointer?
 		return newRows(C.SPI_tuptable.vals, C.SPI_tuptable.tupdesc, C.uint64(C.SPI_processed)), nil
 	}
 	return nil, fmt.Errorf("Query failed: %s", C.GoString(C.SPI_result_code_string(C.SPI_result)))
